@@ -3,7 +3,6 @@
   "description": "This is my first rest api project",
   "version": "1.0.0",
   "main": "app.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
@@ -18,7 +17,6 @@
     "url": "https://github.com/Brajesh143/nodejs-social-network-api/issues"
   },
   "homepage": "https://github.com/Brajesh143/nodejs-social-network-api#readme",
-
   "dependencies": {
     "async-handler-express": "^0.2.4",
     "bcryptjs": "^2.4.3",

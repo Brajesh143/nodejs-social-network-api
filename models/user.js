@@ -16,15 +16,25 @@ const userSchema = new Schema({
         require: true
     },
     role: {
-
+        type: String,
+        require: true,
+        enum: ['Admin', 'User'],
+        default: 'User'
     },
     status: {
-
+        type: String,
+        require: true,
+        enum: ['Active', 'Inactive'],
+        default: 'Active'
     },
     post: [
         {
+            type: Schema.Types.ObjectId,
+            ref: 'Post'
         }
     ]
 }, {
     timestamps: true
 })
+
+module.exports = mongoose.model('User', userSchema)
