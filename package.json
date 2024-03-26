@@ -1,0 +1,29 @@
+{
+  "name": "nodejs-social-network-api",
+  "description": "This is my first rest api project",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brajesh143/nodejs-social-network-api.git"
+  },
+  "author": "Brajesh Singh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Brajesh143/nodejs-social-network-api/issues"
+  },
+  "homepage": "https://github.com/Brajesh143/nodejs-social-network-api#readme",
+  "dependencies": {
+    "async-handler-express": "^0.2.4",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.1",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.2.3"
+  }
+}
