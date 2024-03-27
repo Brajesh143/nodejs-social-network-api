@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
 // const signUp = (req, res, next) => {
@@ -35,7 +34,11 @@ const signUp = asyncHandler(async (req, res, next) => {
         }
 
         const newUser = await User.create({
-            name, email, hashedPassword, role, status
+            name,
+            email,
+            password: hashedPassword,
+            role, 
+            status
         });
 
         if (newUser) {
@@ -49,35 +52,109 @@ const signUp = asyncHandler(async (req, res, next) => {
 const login = asyncHandler(async (req, res, next) => {
     const { email,  password} = req.body;
     
-    // try {
-        let userData;
-        const checkEmail = await User.findOne({ "email": email });
-        userData = checkEmail;
-        console.log(userData, userData.password)
-        if (!checkEmail) {
-            throw new Error("Account not exist. Please create new account!")
-        } else if (checkEmail.status === 'Inactive') {
-            throw new Error("Your account is inactive. Please contact to admin!")
+    try {
+        const user = await User.findOne({ email })
+        if (!user) {
+          res.status(400).json({
+            message: "Login not successful",
+            error: "User not found",
+          })
+        } else {
+          // comparing given password with hashed password
+          bcrypt.compare(password, user.password).then(function (result) {
+            if (result ) {
+                const token = jwt.sign(
+                    {
+                        email: user.email,
+                        userId: user._id.toString()
+                    },
+                    'somesupersecretsecret',
+                    {expiresIn: '1h' }
+                )
+                res.status(200).json({
+                    message: "Login successful",
+                    token: token,
+                    data: user
+
+                })
+            } else {
+                res.status(400).json({ message: "Credential not matched" })
+            } 
+          })
         }
-
-        // const hashedPassword = await bcrypt.hash(password, 12);
-        const comparePassword = await bcrypt.compare(password, checkEmail.password)
-        console.log("compahgh", comparePassword)
-        // if (comparePassword) {
-        //     const token = jwt.sign(
-        //         {
-        //             email: checkEmail.email,
-        //             userId: checkEmail._id.toString()
-        //         },
-        //         'somesupersecretsecret',
-        //         {expiresIn: '1h' }
-        //     )
-
-        //     res.status(200).json({message: "User login successfuly!", token: token})
-        // }
-    // } catch (err) {
-    //     throw new Error(err)
-    // }
+    } catch (error) {
+        res.status(400).json({
+          message: "An error occurred",
+          error: error.message,
+        })
+    }
 })
 
-module.exports = { signUp, login }
+const statusUpdate = asyncHandler(async (req, res, next) => {
+    const { status } = req.body;
+    const user_id = req.userId;
+
+    try {
+        if (user_id !== null) {
+            const updatedUser = await User.findByIdAndUpdate(req.userId, req.body, {new: false});
+
+            if (updatedUser) {
+                res.status(200).json({
+                    message: "Status Updated Successfuly"
+                })
+            }
+        } else {
+            res.status(404).json({
+                message: "Token not found. Please add token!"
+            })
+        }
+    } catch (err) {
+        res.status(500).json({
+            message: "An error occurred",
+            error: error.message,
+        })
+    }
+})
+
+const userUpdate = asyncHandler(async (req, res, next) => {
+    console.log("test")
+})
+
+const getUserDetails = asyncHandler(async (req, res, next) => {
+    const user_id = req.userId;
+    try {
+        const user = await User.findById(user_id)
+        if (!user) {
+            res.status(200).json({ message: "User not found" })
+        }
+
+        res.status(200).json({ message: "User details", data: user })
+    } catch (err) {
+        res.status(500).json({
+            message: "An error occurred",
+            error: error.message,
+        })
+    }
+})
+
+const getUsers = asyncHandler(async (req, res, next) => {
+    const user_id = req.userId;
+    
+    try {
+        const user = await User.findById(user_id);
+        if (user && user.role === 'Admin') {
+            const users = await User.find({ role: { $ne: 'Admin' }})
+            
+            res.status(200).json({ message: "Users list", data: users })
+        } else {
+            res.status(403).json({ message: "You are not authorized" })
+        }
+    } catch (err) {
+        res.status(500).json({
+            message: "An error occurred",
+            error: err.message
+        })
+    }
+})
+
+module.exports = { signUp, login, statusUpdate, userUpdate, getUserDetails, getUsers }
