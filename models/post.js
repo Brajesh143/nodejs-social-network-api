@@ -14,6 +14,12 @@ const postSchema = new Schema({
         type: String,
         required: true
     },
+    status: {
+        type: String,
+        required: true,
+        enum: ['Active', 'Inactive'],
+        default: 'Active'
+    },
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',

@@ -1,17 +1,18 @@
 const express = require('express')
 const router = express.Router()
 const postController = require('../controllers/post')
+const tokenValidate = require('../middlewares/validator')
 
 router.get('/', postController.getPosts)
 
-router.post('/', postController.createPost)
+router.post('/', tokenValidate, postController.createPost)
 
 router.get('/:id', postController.getPostDetails)
 
-router.put('/:id', postController.updatePost)
+router.put('/:id', tokenValidate, tokenValidate, postController.updatePost)
 
-router.delete('/:id', postController.deletePost)
+router.delete('/:id', tokenValidate, postController.deletePost)
 
-router.get('/my-post', postController.getMyPost)
+router.get('/my-post', tokenValidate, postController.getMyPost)
 
 module.exports = router;
