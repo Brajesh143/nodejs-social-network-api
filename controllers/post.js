@@ -29,9 +29,7 @@ const createPost = asyncHandler(async (req, res, next) => {
             creator: user_id
         })
     
-        const user = await User.findById(user_id)
-        user.post.push(post)
-        user.save()
+        const user = await User.findOneAndUpdate({_id: user_id}, { $push: {post: post }})
     
         res.status(201).json({ message: "Post created successfuly", data: post })
     } catch (err) {
@@ -63,24 +61,34 @@ const updatePost = asyncHandler(async (req, res, next) => {
 })
 
 const deletePost = asyncHandler(async (req, res, next) => {
+    const post_id = req.params.id;
+    const user_id = req.userId;
 
+    const post = await Post.findById(post_id)
+    if (post.creator.toString() === user_id) {
+        await User.findOneAndUpdate({_id: user_id}, { $pull: { post : { post } }})
+        await post.deleteOne();
+
+        res.status(200).json({ message: "Post deleted successfuly" })
+    } else {
+        res.status(403).json({ message: "You are not authorized" })
+    }
+    
 })
 
 const getMyPost = asyncHandler(async (req, res, next) => {
     const user_id = req.userId
-    console.log("hello")
-    // const userObjectId = mongoose.Types.ObjectId(user_id);
-    // try {
-        // const posts = await Post.find({ creator : userObjectId })
-        // console.log(posts, userObjectId)
+
+    try {
+        const posts = await Post.find({ creator : user_id })
         
-        // res.status(200).json({ message: "Post data", data: posts })
-    // } catch (err) {
-    //     res.status(500).json({
-    //         message: "An error occurred",
-    //         error: err.message
-    //     })
-    // }
+        res.status(200).json({ message: "Post data", data: posts })
+    } catch (err) {
+        res.status(500).json({
+            message: "An error occurred",
+            error: err.message
+        })
+    }
 })
 
 module.exports = { getPosts, createPost, getPostDetails, updatePost, deletePost, getMyPost }
