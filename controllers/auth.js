@@ -1,7 +1,8 @@
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const User = require('../models/user')
+const User = require('../models/user');
+const { exists } = require('../models/post');
 
 // const signUp = (req, res, next) => {
 //     const { name, email, password } = req.body;
@@ -117,7 +118,29 @@ const statusUpdate = asyncHandler(async (req, res, next) => {
 })
 
 const userUpdate = asyncHandler(async (req, res, next) => {
-    console.log("test")
+    const user_id = req.userId;
+    const { name, email } = req.body
+    
+    try {
+        const user = await User.findById(user_id)
+        const checkEmail = await User.findOne({ email })
+
+        if (checkEmail && email !== user.email) {
+            res.status(500).json({ message: "This email already exist. Please add other email!"})
+        }
+
+        user.name = name
+        user.email = email
+        await user.save()
+        // const user = User.findByIdAndUpdate({ _id: user_id }, { name: name, email: email }, { upsert: true });
+
+        res.status(200).json({message: "User has been updated"})
+    } catch (err) {
+        res.status(500).json({
+            message: "An error occurred",
+            error: error.message,
+        })
+    }
 })
 
 const getUserDetails = asyncHandler(async (req, res, next) => {
@@ -157,4 +180,16 @@ const getUsers = asyncHandler(async (req, res, next) => {
     }
 })
 
-module.exports = { signUp, login, statusUpdate, userUpdate, getUserDetails, getUsers }
+const forgotPassword = asyncHandler(async (req, res, next) => {
+    // send mail to reset password
+})
+
+const resetPassword = asyncHandler(async (req, res, next) => {
+    // reset password
+})
+
+const logout = asyncHandler(async (req, res, next) => {
+    // logout user
+})
+
+module.exports = { signUp, login, statusUpdate, userUpdate, getUserDetails, getUsers, forgotPassword, resetPassword, logout }
