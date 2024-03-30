@@ -7,7 +7,7 @@ router.get('/', postController.getPosts)
 
 router.post('/', tokenValidate, postController.createPost)
 
-router.get('/:id', postController.getPostDetails)
+router.get('/post-details/:id', postController.getPostDetails)
 
 router.put('/:id', tokenValidate, tokenValidate, postController.updatePost)
 

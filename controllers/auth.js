@@ -45,7 +45,10 @@ const signUp = asyncHandler(async (req, res, next) => {
             res.status(201).json({ message: "User created successfuly", data: newUser })
         }
     } catch (err) {
-        throw new Error(err)
+        res.status(500).json({
+            message: "An error occurred",
+            error: error.message,
+        })
     }
 });
 
