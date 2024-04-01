@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 const asyncHandler = require('express-async-handler')
 const Post = require('../models/post')
 const User = require('../models/user')
+const Comment = require('../models/comment')
+const Like = require('../models/like')
 
 const getPosts = asyncHandler(async (req, res, next) => {
     try {
@@ -131,6 +133,28 @@ const statusUpdate = asyncHandler(async (req, res, next) => {
 })
 
 const addComment = asyncHandler(async (req, res, next) => {
+    const { comment } = req.body
+    const user_id = req.userId
+    const post_id = req.params.id
+
+    try {
+        const post = await Post.findById(post_id)
+
+        if(!post) {
+            return res.status(404).json({ message: "Post not found" })
+        }
+
+        const createComment = await Comment.create({ user: user_id, post: post_id, comment: comment })
+
+        const postComment = await Post.findOneAndUpdate({_id: post_id}, { $push: {comment: createComment }})
+
+        res.status(200).json({ message: "Comment added to post" })
+    } catch (err) {
+        res.status(500).json({
+            message: "An error occurred",
+            error: err.message
+        })
+    }
 
 })
 
