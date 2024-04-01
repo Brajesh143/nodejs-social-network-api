@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user');
 const { exists } = require('../models/post');
+const Blacklist = require('../models/blacklist')
+// const tokenBlacklist = [];
 
 // const signUp = (req, res, next) => {
 //     const { name, email, password } = req.body;
@@ -65,8 +67,9 @@ const login = asyncHandler(async (req, res, next) => {
           })
         } else {
           // comparing given password with hashed password
-          bcrypt.compare(password, user.password).then(function (result) {
+            const result = await bcrypt.compare(password, user.password)
             if (result ) {
+                
                 const token = jwt.sign(
                     {
                         email: user.email,
@@ -75,6 +78,10 @@ const login = asyncHandler(async (req, res, next) => {
                     'somesupersecretsecret',
                     {expiresIn: '1h' }
                 )
+
+                user.token = token;
+                await user.save();
+
                 res.status(200).json({
                     message: "Login successful",
                     token: token,
@@ -84,7 +91,7 @@ const login = asyncHandler(async (req, res, next) => {
             } else {
                 res.status(400).json({ message: "Credential not matched" })
             } 
-          })
+        //   })
         }
     } catch (error) {
         res.status(400).json({
@@ -193,6 +200,39 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
 const logout = asyncHandler(async (req, res, next) => {
     // logout user
+
+    try {
+        const authHeader = req.get('Authorization');
+        if (!authHeader) {
+            const error = new Error('Not authenticated.');
+            error.statusCode = 401;
+            throw error;
+        }
+        const token = authHeader.split(' ')[1];
+
+        // const authHeader = req.headers['cookie']; // get the session cookie from request header
+        // if (!authHeader) return res.sendStatus(204); // No content
+        // const cookie = authHeader.split('=')[1]; // If there is, split the cookie string to get the actual jwt token
+        // const accessToken = cookie.split(';')[0];
+        const checkIfBlacklisted = await Blacklist.findOne({ token: token }); // Check if that token is blacklisted
+        // if true, send a no content response.
+        if (checkIfBlacklisted) return res.sendStatus(204);
+        // otherwise blacklist token
+        const newBlacklist = new Blacklist({
+          token: token,
+        });
+        await newBlacklist.save();
+        // Also clear request cookie on client
+        // res.setHeader('Clear-Site-Data', '"cookies"');
+        res.status(200).json({ message: 'You are logged out!' });
+      } catch (err) {
+        res.status(500).json({
+          status: 'error',
+          message: 'Internal Server Error',
+        });
+      }
+    //   res.end();
+ 
 })
 
 module.exports = { signUp, login, statusUpdate, userUpdate, getUserDetails, getUsers, forgotPassword, resetPassword, logout }

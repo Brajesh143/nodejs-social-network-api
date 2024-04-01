@@ -20,6 +20,6 @@ router.get('/forgot-password', authController.forgotPassword)
 
 router.post('/reset-password', authController.resetPassword)
 
-router.get('/logout', authController.logout)
+router.post('/logout', tokenValidate, authController.logout)
 
 module.exports = router

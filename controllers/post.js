@@ -122,4 +122,20 @@ const getMyPost = asyncHandler(async (req, res, next) => {
     }
 })
 
-module.exports = { getPosts, createPost, getPostDetails, updatePost, deletePost, getMyPost }
+const likeUnlike = asyncHandler(async (req, res, next) => {
+
+})
+
+const statusUpdate = asyncHandler(async (req, res, next) => {
+
+})
+
+const addComment = asyncHandler(async (req, res, next) => {
+
+})
+
+const addView = asyncHandler(async (req, res, next) => {
+
+})
+
+module.exports = { getPosts, createPost, getPostDetails, updatePost, deletePost, getMyPost, likeUnlike, statusUpdate, addComment, addView }
