@@ -149,7 +149,11 @@ const likeUnlike = asyncHandler(async (req, res, next) => {
 })
 
 const statusUpdate = asyncHandler(async (req, res, next) => {
+    const user_id = req.userId
+    const post_id = req.params.id
+    const { status } = req.body.status
 
+    const post = await Post.findOne()
 })
 
 const addComment = asyncHandler(async (req, res, next) => {
