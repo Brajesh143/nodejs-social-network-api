@@ -4,8 +4,7 @@ const inputValidator = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         let error = {};
-        console.log(errors)
-        errors.array().map((err) => (error[err.param] = err.msg));
+        errors.array().map((err) => (error[err.path] = err.msg));
         return res.status(422).json({ error });
     }
     next();
