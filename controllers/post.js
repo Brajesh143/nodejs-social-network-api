@@ -125,7 +125,27 @@ const getMyPost = asyncHandler(async (req, res, next) => {
 })
 
 const likeUnlike = asyncHandler(async (req, res, next) => {
+    const user_id = req.userId
+    const post_id = req.params.id
 
+    try {
+        const post = await Post.findById(post_id)
+
+        if(!post) {
+            return res.status(404).json({ message: "Post not found" })
+        }
+
+        const createLike = await Like.create({ user: user_id, post: post_id })
+
+        const postComment = await Post.findOneAndUpdate({_id: post_id}, { $push: {like: createLike }})
+
+        res.status(200).json({ message: "Like added to post" })
+    } catch (err) {
+        res.status(500).json({
+            message: "An error occurred",
+            error: err.message
+        })
+    }
 })
 
 const statusUpdate = asyncHandler(async (req, res, next) => {

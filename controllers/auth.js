@@ -4,27 +4,6 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user');
 const { exists } = require('../models/post');
 const Blacklist = require('../models/blacklist')
-// const tokenBlacklist = [];
-
-// const signUp = (req, res, next) => {
-//     const { name, email, password } = req.body;
-
-//     bcrypt.hash(password, 12)
-//     .then(hashedPassword => {
-//         const user = new User({
-//             name,
-//             email,
-//             hashedPassword
-//         })
-
-//         return user.save()
-//     })
-//     .then((result) => {
-//         res.status(201).json({message: "User successfuly created", data: result })
-//     }).catch((err) => {
-//         throw new Error(err)
-//     })
-// }
 
 const signUp = asyncHandler(async (req, res, next) => {
     const {name, email, password, role, status} = req.body;
@@ -50,7 +29,7 @@ const signUp = asyncHandler(async (req, res, next) => {
     } catch (err) {
         res.status(500).json({
             message: "An error occurred",
-            error: error.message,
+            error: err.message,
         })
     }
 });

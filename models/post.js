@@ -30,6 +30,12 @@ const postSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Comment'
         }
+    ],
+    like: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Like'
+        }
     ]
 },{ timestamps: true }
 );

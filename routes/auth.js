@@ -1,10 +1,20 @@
 const express = require('express')
+const { body } = require('express-validator')
 const tokenValidate = require('../middlewares/validator')
 const authController = require('../controllers/auth')
+const inputValidator = require('../middlewares/inputValidator')
 
 const router = express.Router()
 
-router.post('/signup', authController.signUp)
+router.post('/signup',
+        [
+            body("name")
+            .not()
+            .isEmpty()
+            .withMessage("name is required!")
+        ],
+        inputValidator,
+        authController.signUp)
 
 router.post('/login', authController.login)
 

@@ -15,7 +15,7 @@ router.delete('/:id', tokenValidate, postController.deletePost)
 
 router.get('/my-post', tokenValidate, postController.getMyPost)
 
-router.post('/like-unlike', tokenValidate, postController.likeUnlike)
+router.post('/like-unlike/:id', tokenValidate, postController.likeUnlike)
 
 router.patch('/status-update/:id', tokenValidate, postController.statusUpdate)
 
