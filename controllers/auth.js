@@ -7,14 +7,9 @@ const Blacklist = require('../models/blacklist')
 
 const signUp = asyncHandler(async (req, res, next) => {
     const {name, email, password, role, status} = req.body;
-    const hashedPassword = await bcrypt.hash(password, 12)
+    const hashedPassword = password ? await bcrypt.hash(password, 12) : '';
 
     try {
-        const checkUser = await User.findOne({ email })
-        if (checkUser) {
-            throw new Error("Email already in use. Please use another email")
-        }
-
         const newUser = await User.create({
             name,
             email,
@@ -27,10 +22,7 @@ const signUp = asyncHandler(async (req, res, next) => {
             res.status(201).json({ message: "User created successfuly", data: newUser })
         }
     } catch (err) {
-        res.status(500).json({
-            message: "An error occurred",
-            error: err.message,
-        })
+        res.status(500).json({ message: err.message })
     }
 });
 
@@ -40,10 +32,7 @@ const login = asyncHandler(async (req, res, next) => {
     try {
         const user = await User.findOne({ email })
         if (!user) {
-          res.status(400).json({
-            message: "Login not successful",
-            error: "User not found",
-          })
+            res.status(404).json({ message: "User not found" })
         } else {
           // comparing given password with hashed password
             const result = await bcrypt.compare(password, user.password)
@@ -73,10 +62,7 @@ const login = asyncHandler(async (req, res, next) => {
         //   })
         }
     } catch (error) {
-        res.status(400).json({
-          message: "An error occurred",
-          error: error.message,
-        })
+        res.status(500).json({ message: error.message })
     }
 })
 

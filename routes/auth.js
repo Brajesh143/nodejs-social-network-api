@@ -8,28 +8,28 @@ const User = require('../models/user')
 const router = express.Router()
 
 router.post('/signup',
-        body("name")
-        .not()
-        .isEmpty()
-        .withMessage("Name field is required")
-        .escape(),
-        body("email")
-        .isEmail()
-        .withMessage("Enter a valid email address")
-        .trim()
-        .escape()
-        .normalizeEmail()
-        .custom(async value => {
-            const user = await User.findOne({ email: value })
-            if (user) {
-                throw new Error('E-mail already in use');
-            }
-        }),
-        body("password")
-        .notEmpty()
-        .isLength({ min: 8, max: 16 })
-        .withMessage("Must be at least 8 chars or atmost 16 chars long"),
-        inputValidator,
+        // body("name")
+        // .not()
+        // .isEmpty()
+        // .withMessage("Name field is required")
+        // .escape(),
+        // body("email")
+        // .isEmail()
+        // .withMessage("Enter a valid email address")
+        // .trim()
+        // .escape()
+        // .normalizeEmail()
+        // .custom(async value => {
+        //     const user = await User.findOne({ email: value })
+        //     if (user) {
+        //         throw new Error('E-mail already in use');
+        //     }
+        // }),
+        // body("password")
+        // .notEmpty()
+        // .isLength({ min: 8, max: 16 })
+        // .withMessage("Must be at least 8 chars or atmost 16 chars long"),
+        // inputValidator,
         authController.signUp)
 
 router.post('/login', 
@@ -56,7 +56,25 @@ router.patch('/status-update',
         }),
         inputValidator, tokenValidate, authController.statusUpdate)
 
-router.put('/update', tokenValidate, authController.userUpdate)
+router.put('/update', 
+        body("name")
+        .not()
+        .isEmpty()
+        .withMessage("Name field is required")
+        .escape(),
+        body("email")
+        .isEmail()
+        .withMessage("Enter a valid email address")
+        .trim()
+        .escape()
+        .normalizeEmail(),
+        // .custom(async value => {
+        //     const user = await User.findOne({ email: value })
+        //     if (user) {
+        //         throw new Error('E-mail already in use');
+        //     }
+        // }),
+        inputValidator, tokenValidate, authController.userUpdate)
 
 router.get('/user-details', tokenValidate, authController.getUserDetails)
 
@@ -65,8 +83,14 @@ router.get('/users', tokenValidate, authController.getUsers)
 router.get('/forgot-password', authController.forgotPassword)
 
 router.post('/reset-password', 
-    body("new_password"),
-    body("new_password_confirm"),
+    body("new_password")
+    .notEmpty()
+    .isLength({ min: 8, max: 16 })
+    .withMessage("Password must be at least 8 chars and atmost 16 chars"),
+    body("new_password_confirm")
+    .notEmpty()
+    .isLength({ min: 8, max: 16 })
+    .withMessage("Password must be at least 8 chars and atmost 16 chars"),
     inputValidator,
     authController.resetPassword)
 

@@ -9,22 +9,23 @@ const userSchema = new Schema({
     },
     email: {
         type: String,
-        require: true,
+        required: "Email field is required",
         unique: true
     },
     password: {
         type: String,
-        require: true
+        required: "Password must be atleast 8 chars or atmost 16 chars",
+        minlength: 8
     },
     role: {
         type: String,
-        require: true,
+        required: true,
         enum: ['Admin', 'User'],
         default: 'User'
     },
     status: {
         type: String,
-        require: true,
+        required: true,
         enum: ['Active', 'Inactive'],
         default: 'Active'
     },
