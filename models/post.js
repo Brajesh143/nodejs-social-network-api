@@ -4,15 +4,15 @@ const Schema = mongoose.Schema;
 const postSchema = new Schema({
     title: {
         type: String,
-        required: true
+        required: "Title field is required"
     },
     content: {
         type: String,
-        required: true
+        required: "Content field is required"
     },
     image_url: {
         type: String,
-        required: true
+        required: "Image field is required"
     },
     status: {
         type: String,
@@ -23,7 +23,7 @@ const postSchema = new Schema({
     creator: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: "Creator is required"
     },
     comment: [
         {

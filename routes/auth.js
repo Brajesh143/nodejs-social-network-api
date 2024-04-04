@@ -8,28 +8,28 @@ const User = require('../models/user')
 const router = express.Router()
 
 router.post('/signup',
-        // body("name")
-        // .not()
-        // .isEmpty()
-        // .withMessage("Name field is required")
-        // .escape(),
-        // body("email")
-        // .isEmail()
-        // .withMessage("Enter a valid email address")
-        // .trim()
-        // .escape()
-        // .normalizeEmail()
-        // .custom(async value => {
-        //     const user = await User.findOne({ email: value })
-        //     if (user) {
-        //         throw new Error('E-mail already in use');
-        //     }
-        // }),
-        // body("password")
-        // .notEmpty()
-        // .isLength({ min: 8, max: 16 })
-        // .withMessage("Must be at least 8 chars or atmost 16 chars long"),
-        // inputValidator,
+        body("name")
+        .not()
+        .isEmpty()
+        .withMessage("Name field is required")
+        .escape(),
+        body("email")
+        .isEmail()
+        .withMessage("Enter a valid email address")
+        .trim()
+        .escape()
+        .normalizeEmail()
+        .custom(async value => {
+            const user = await User.findOne({ email: value })
+            if (user) {
+                throw new Error('E-mail already in use');
+            }
+        }),
+        body("password")
+        .notEmpty()
+        .isLength({ min: 8, max: 16 })
+        .withMessage("Must be at least 8 chars or atmost 16 chars long"),
+        inputValidator,
         authController.signUp)
 
 router.post('/login', 

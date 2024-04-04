@@ -5,12 +5,12 @@ const likeSchema = new Schema({
     post: {
         type: Schema.Types.ObjectId,
         ref: 'Post',
-        required: true
+        required: "Post field is required"
     },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: "User field is required"
     }
 }, { timestamps: true })
 

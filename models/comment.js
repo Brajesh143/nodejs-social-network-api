@@ -5,16 +5,16 @@ const commentSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: "User field is required"
     },
     post: {
         type: Schema.Types.ObjectId,
         ref: 'Post',
-        required: true
+        required: "Post field is required"
     },
     comment: {
         type: String,
-        required: true
+        required: "Comment field is required"
     }
 }, { timestamps: true })
 
