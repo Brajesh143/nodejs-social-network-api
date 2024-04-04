@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const asyncHandler = require('express-async-handler')
+const fs = require('fs');
+const path = require('path');
 const Post = require('../models/post')
 const User = require('../models/user')
 const Comment = require('../models/comment')
@@ -11,10 +13,7 @@ const getPosts = asyncHandler(async (req, res, next) => {
         
         res.status(200).json({ message: "Post data", data: posts })
     } catch (err) {
-        res.status(500).json({
-            message: "An error occurred",
-            error: err.message
-        })
+        res.status(500).json({ message: err.message })
     }
 })
 
@@ -22,11 +21,18 @@ const createPost = asyncHandler(async (req, res, next) => {
     const { title, content, image_url, status } = req.body;
     const user_id = req.userId;
 
+    console.log(req.body)
+    if (!req.file) {
+        const error = new Error('No image provided.');
+        res.status(422).json({ message: error })
+    }
+    const imageUrl = req.file.path;
+
     try {
         const post = await Post.create({
             title,
             content,
-            image_url,
+            image_url: imageUrl,
             status,
             creator: user_id
         })
@@ -35,10 +41,7 @@ const createPost = asyncHandler(async (req, res, next) => {
     
         res.status(201).json({ message: "Post created successfuly", data: post })
     } catch (err) {
-        res.status(500).json({
-            message: "An error occurred",
-            error: err.message
-        })
+        res.status(500).json({ message: err.message })
     }
 })
 
@@ -51,10 +54,7 @@ const getPostDetails = asyncHandler(async (req, res, next) => {
         res.status(200).json({ message: "Post data found", data: post })
 
     } catch (err) {
-        res.status(500).json({
-            message: "An error occurred",
-            error: err.message
-        })
+        res.status(500).json({ message: err.message })
     }
 })
 
@@ -80,10 +80,7 @@ const updatePost = asyncHandler(async (req, res, next) => {
             res.status(403).json({ message: "You are not authorized" })
         }
     } catch (err) {
-        res.status(500).json({
-            message: "An error occurred",
-            error: err.message
-        })
+        res.status(500).json({ message: err.message })
     }
 })
 
@@ -102,10 +99,7 @@ const deletePost = asyncHandler(async (req, res, next) => {
             res.status(403).json({ message: "You are not authorized" })
         }
     } catch (err) {
-        res.status(500).json({
-            message: "An error occurred",
-            error: err.message
-        })
+        res.status(500).json({ message: err.message })
     }
 })
 
@@ -117,10 +111,7 @@ const getMyPost = asyncHandler(async (req, res, next) => {
         
         res.status(200).json({ message: "Post data", data: posts })
     } catch (err) {
-        res.status(500).json({
-            message: "An error occurred",
-            error: err.message
-        })
+        res.status(500).json({ message: err.message })
     }
 })
 
@@ -141,10 +132,7 @@ const likeUnlike = asyncHandler(async (req, res, next) => {
 
         res.status(200).json({ message: "Like added to post" })
     } catch (err) {
-        res.status(500).json({
-            message: "An error occurred",
-            error: err.message
-        })
+        res.status(500).json({ message: err.message })
     }
 })
 
@@ -174,12 +162,8 @@ const addComment = asyncHandler(async (req, res, next) => {
 
         res.status(200).json({ message: "Comment added to post" })
     } catch (err) {
-        res.status(500).json({
-            message: "An error occurred",
-            error: err.message
-        })
+        res.status(500).json({ message: err.message })
     }
-
 })
 
 const addView = asyncHandler(async (req, res, next) => {
